@@ -9,10 +9,10 @@
 
 <h2>Stack</h2>
 
-> Laravel 8<br/>
-> MySQL<br/>
-> VueJS 2<br/>
-> Bootstrap 4
+> * Laravel 8<br/>
+> * MySQL<br/>
+> * VueJS 2<br/>
+> * Bootstrap 4
 
 ## License
 
