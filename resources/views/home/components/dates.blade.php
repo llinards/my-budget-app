@@ -1,0 +1,1 @@
+<p>Šodienas datums: {{ $dates }} </p>
