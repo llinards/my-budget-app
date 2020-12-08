@@ -1,12 +1,17 @@
-<p align="center">My Budget App</p>
+<p align="center"></p>
+
+<h1 align="center">💸 My Budget App 💸</h1>
+<p>
+  <img alt="Version" src="https://img.shields.io/badge/version-0.1-blue.svg?cacheSeconds=2592000" />
+</p>
 
 <p>Building my personal budget web app as previously I've used Excel for this. More info coming up...</p>
 
-<h3>Stack</h3>
+<h2>Stack</h2>
 
-> Laravel 8
-> MySQL
-> VueJS 2
+> Laravel 8<br/>
+> MySQL<br/>
+> VueJS 2<br/>
 > Bootstrap 4
 
 ## License
