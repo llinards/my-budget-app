@@ -9,7 +9,7 @@
             <h5 class="text-center" v-if="salaryDate">
               Algas diena: {{ salaryDate }}
             </h5>
-            <h5 class="text-center" v-if="daysUntilSalary">
+            <h5 class="text-center font-weight-bold" v-if="daysUntilSalary">
               Līdz algai: {{ daysUntilSalary }}
             </h5>
             <hr />

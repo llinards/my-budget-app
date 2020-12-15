@@ -1928,6 +1928,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2093,18 +2101,114 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Salary",
   data: function data() {
     return {
       mainSalary: 0,
       totalIncome: 0,
-      updateSalary: false
+      updateSalary: false,
+      calculatedDailyRate: 0,
+      dailyRate: 0,
+      currentBalance: 0,
+      balanceShouldNotBeBelow: 0
     };
   },
   watch: {
     mainSalary: function mainSalary(_mainSalary) {
       this.totalIncome = _mainSalary;
+    },
+    currentBalance: function currentBalance() {
+      this.calculateDailyRate();
+    },
+    dailyRate: function dailyRate() {
+      // Vuex
+      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 14).toFixed(2);
     }
   },
   methods: {
@@ -2113,6 +2217,8 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.post("/api/salary", {
         amount: this.mainSalary,
+        dailyRate: this.dailyRate,
+        currentBalance: this.currentBalance,
         isMainSalary: true
       }).then(function (response) {
         _this.updateSalary = false;
@@ -2128,6 +2234,9 @@ __webpack_require__.r(__webpack_exports__);
         updateMsg: msg
       };
       return this.$emit("updateStatus", updateStatus);
+    },
+    calculateDailyRate: function calculateDailyRate() {
+      this.calculatedDailyRate = parseFloat(this.currentBalance / 14).toFixed(2);
     }
   },
   mounted: function mounted() {
@@ -2136,6 +2245,8 @@ __webpack_require__.r(__webpack_exports__);
     axios.get("/api/salary").then(function (response) {
       if (response.data != "") {
         _this2.mainSalary = response.data.amount;
+        _this2.dailyRate = response.data.dailyRate;
+        _this2.currentBalance = response.data.currentBalance;
       }
     })["catch"](function (err) {
       _this2.reportUpdateStatus(false, err);
@@ -41373,11 +41484,14 @@ var render = function() {
           ? _c(
               "div",
               {
-                staticClass: "alert",
+                staticClass: "alert alert-dismissible",
                 class: _vm.updateSuccess ? "alert-success" : "alert-danger",
                 attrs: { role: "alert" }
               },
-              [_vm._v("\n      " + _vm._s(this.updateMsg) + "\n    ")]
+              [
+                _vm._v("\n      " + _vm._s(this.updateMsg) + "\n      "),
+                _vm._m(0)
+              ]
             )
           : _vm._e()
       ]),
@@ -41391,7 +41505,25 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "alert",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
 render._withStripped = true
 
 
@@ -41445,7 +41577,7 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _vm.daysUntilSalary
-                ? _c("h5", { staticClass: "text-center" }, [
+                ? _c("h5", { staticClass: "text-center font-weight-bold" }, [
                     _vm._v(
                       "\n            Līdz algai: " +
                         _vm._s(_vm.daysUntilSalary) +
@@ -41524,68 +41656,243 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("div", [
-      _c("p", [_vm._v("Kopā ienākumi: " + _vm._s(_vm.totalIncome) + " EUR")]),
-      _vm._v(" "),
-      _c("p", [_vm._v("Alga: " + _vm._s(_vm.mainSalary) + " EUR")]),
-      _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "row justify-content-center align-items-center flex-column"
+      },
+      [
+        _c("div", { staticClass: "container" }, [
+          _c("div", { staticClass: "col-6" }, [
+            _c("div", { staticClass: "mb-3" }, [
+              _c("ul", { staticClass: "list-group" }, [
+                _c("li", { staticClass: "list-group-item" }, [
+                  _c(
+                    "h5",
+                    { staticClass: "text-center m-0 font-weight-bold" },
+                    [
+                      _vm._v(
+                        "\n                Kopā ienākumi: " +
+                          _vm._s(_vm.totalIncome) +
+                          " EUR\n              "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "text-center m-0" }, [
+                    _vm._v("Alga: " + _vm._s(_vm.mainSalary) + " EUR")
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("li", { staticClass: "list-group-item" }, [
+                  _c(
+                    "h5",
+                    { staticClass: "text-center m-0 font-weight-bold" },
+                    [
+                      _vm._v(
+                        "\n                Konta atlikums: " +
+                          _vm._s(_vm.currentBalance) +
+                          " EUR\n              "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "m-0" }, [
+                    _vm._v(
+                      "\n                Kontā nevajadzētu būt mazāk par:\n                " +
+                        _vm._s(_vm.balanceShouldNotBeBelow) +
+                        " EUR\n              "
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("li", { staticClass: "list-group-item" }, [
+                  _c(
+                    "h5",
+                    { staticClass: "text-center m-0 font-weight-bold" },
+                    [
+                      _vm._v(
+                        "\n                Dienas likme: " +
+                          _vm._s(_vm.dailyRate) +
+                          " EUR\n              "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "m-0" }, [
+                    _vm._v(
+                      "\n                Aprēķinātā dienas likme no atlikuma:\n                " +
+                        _vm._s(_vm.calculatedDailyRate) +
+                        " EUR\n              "
+                    )
+                  ])
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _vm._m(0)
+          ])
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: { id: "updateSalary", tabindex: "-1" }
+      },
+      [
+        _c("div", { staticClass: "modal-dialog" }, [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-body" }, [
+              _c("form", { staticClass: "mt-3" }, [
+                _c("div", { staticClass: "form-group text-center" }, [
+                  _c("label", { attrs: { for: "mainSalary" } }, [
+                    _vm._v("Alga:")
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.mainSalary,
+                        expression: "mainSalary"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "number",
+                      name: "mainSalary",
+                      id: "mainSalary"
+                    },
+                    domProps: { value: _vm.mainSalary },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.mainSalary = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group text-center" }, [
+                  _c("label", { attrs: { for: "dailyRate" } }, [
+                    _vm._v("Dienas likme:")
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.dailyRate,
+                        expression: "dailyRate"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "number",
+                      name: "dailyRate",
+                      id: "dailyRate"
+                    },
+                    domProps: { value: _vm.dailyRate },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.dailyRate = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group text-center" }, [
+                  _c("label", { attrs: { for: "currentBalance" } }, [
+                    _vm._v("Konta atlikms:")
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.currentBalance,
+                        expression: "currentBalance"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "number",
+                      name: "currentBalance",
+                      id: "currentBalance"
+                    },
+                    domProps: { value: _vm.currentBalance },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.currentBalance = $event.target.value
+                      }
+                    }
+                  })
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("\n            Aizvērt\n          ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { type: "button", "data-dismiss": "modal" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      return _vm.changeSalary($event)
+                    }
+                  }
+                },
+                [_vm._v("\n            Saglabāt\n          ")]
+              )
+            ])
+          ])
+        ])
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "text-center" }, [
       _c(
         "button",
         {
-          on: {
-            click: function($event) {
-              _vm.updateSalary = !_vm.updateSalary
-            }
-          }
+          staticClass: "btn btn-success",
+          attrs: { "data-toggle": "modal", "data-target": "#updateSalary" }
         },
-        [_vm._v("Atjaunot pamatalgu")]
+        [_vm._v("\n            Atjaunot datus\n          ")]
       )
-    ]),
-    _vm._v(" "),
-    _vm.updateSalary
-      ? _c("form", [
-          _c("label", { attrs: { for: "mainSalary" } }, [
-            _vm._v("Pamatalga EUR:")
-          ]),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.mainSalary,
-                expression: "mainSalary"
-              }
-            ],
-            attrs: { type: "number", name: "mainSalary", id: "mainSalary" },
-            domProps: { value: _vm.mainSalary },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.mainSalary = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.changeSalary($event)
-                }
-              }
-            },
-            [_vm._v("Saglabāt")]
-          )
-        ])
-      : _vm._e()
-  ])
-}
-var staticRenderFns = []
+    ])
+  }
+]
 render._withStripped = true
 
 

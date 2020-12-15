@@ -11,7 +11,9 @@ class Salary extends Model
 
     protected $fillable = [
         'isMainSalary',
-        'amount'
+        'amount',
+        'dailyRate',
+        'currentBalance'
     ];
 
     public function scopeMainSalary($query)

@@ -2,12 +2,20 @@
   <div class="container mt-3">
     <div class="alert-msgs mt-3">
       <div
-        class="alert"
+        class="alert alert-dismissible"
         v-bind:class="updateSuccess ? 'alert-success' : 'alert-danger'"
         v-if="updateSuccess || updateFail"
         role="alert"
       >
         {{ this.updateMsg }}
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
     </div>
     <Date v-on:updateStatus="updateStatus" />
