@@ -2,7 +2,7 @@
   <div>
     <div class="row justify-content-center align-items-center flex-column">
       <div class="container">
-        <div class="col-6">
+        <div class="col-md-6">
           <div class="mb-3">
             <ul class="list-group">
               <li class="list-group-item">
@@ -15,7 +15,14 @@
                 <h5 class="text-center m-0 font-weight-bold">
                   Konta atlikums: {{ currentBalance }} EUR
                 </h5>
-                <p class="m-0">
+                <p
+                  class="m-0"
+                  v-bind:class="[
+                    this.currentBalance >= this.balanceShouldNotBeBelow
+                      ? 'text-success'
+                      : 'text-danger',
+                  ]"
+                >
                   Kontā nevajadzētu būt mazāk par:
                   {{ balanceShouldNotBeBelow }} EUR
                 </p>
@@ -24,7 +31,14 @@
                 <h5 class="text-center m-0 font-weight-bold">
                   Dienas likme: {{ dailyRate }} EUR
                 </h5>
-                <p class="m-0">
+                <p
+                  class="m-0"
+                  v-bind:class="[
+                    this.dailyRate <= this.calculatedDailyRate
+                      ? 'text-success'
+                      : 'text-danger',
+                  ]"
+                >
                   Aprēķinātā dienas likme no atlikuma:
                   {{ calculatedDailyRate }} EUR
                 </p>
@@ -56,6 +70,7 @@
                   id="mainSalary"
                   v-model="mainSalary"
                   class="form-control"
+                  required
                 />
               </div>
               <div class="form-group text-center">
@@ -66,6 +81,7 @@
                   id="dailyRate"
                   v-model="dailyRate"
                   class="form-control"
+                  required
                 />
               </div>
               <div class="form-group text-center">
@@ -76,6 +92,7 @@
                   id="currentBalance"
                   v-model="currentBalance"
                   class="form-control"
+                  required
                 />
               </div>
             </form>
@@ -124,8 +141,7 @@ export default {
       this.calculateDailyRate();
     },
     dailyRate() {
-      // Vuex
-      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 14).toFixed(2);
+      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 13).toFixed(2);
     },
   },
   methods: {
@@ -153,7 +169,7 @@ export default {
       return this.$emit("updateStatus", updateStatus);
     },
     calculateDailyRate: function () {
-      this.calculatedDailyRate = parseFloat(this.currentBalance / 14).toFixed(
+      this.calculatedDailyRate = parseFloat(this.currentBalance / 13).toFixed(
         2
       );
     },

@@ -2186,6 +2186,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Salary",
   data: function data() {
@@ -2207,8 +2224,7 @@ __webpack_require__.r(__webpack_exports__);
       this.calculateDailyRate();
     },
     dailyRate: function dailyRate() {
-      // Vuex
-      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 14).toFixed(2);
+      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 13).toFixed(2);
     }
   },
   methods: {
@@ -2236,7 +2252,7 @@ __webpack_require__.r(__webpack_exports__);
       return this.$emit("updateStatus", updateStatus);
     },
     calculateDailyRate: function calculateDailyRate() {
-      this.calculatedDailyRate = parseFloat(this.currentBalance / 14).toFixed(2);
+      this.calculatedDailyRate = parseFloat(this.currentBalance / 13).toFixed(2);
     }
   },
   mounted: function mounted() {
@@ -41663,7 +41679,7 @@ var render = function() {
       },
       [
         _c("div", { staticClass: "container" }, [
-          _c("div", { staticClass: "col-6" }, [
+          _c("div", { staticClass: "col-md-6" }, [
             _c("div", { staticClass: "mb-3" }, [
               _c("ul", { staticClass: "list-group" }, [
                 _c("li", { staticClass: "list-group-item" }, [
@@ -41697,13 +41713,24 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _c("p", { staticClass: "m-0" }, [
-                    _vm._v(
-                      "\n                Kontā nevajadzētu būt mazāk par:\n                " +
-                        _vm._s(_vm.balanceShouldNotBeBelow) +
-                        " EUR\n              "
-                    )
-                  ])
+                  _c(
+                    "p",
+                    {
+                      staticClass: "m-0",
+                      class: [
+                        this.currentBalance >= this.balanceShouldNotBeBelow
+                          ? "text-success"
+                          : "text-danger"
+                      ]
+                    },
+                    [
+                      _vm._v(
+                        "\n                Kontā nevajadzētu būt mazāk par:\n                " +
+                          _vm._s(_vm.balanceShouldNotBeBelow) +
+                          " EUR\n              "
+                      )
+                    ]
+                  )
                 ]),
                 _vm._v(" "),
                 _c("li", { staticClass: "list-group-item" }, [
@@ -41719,13 +41746,24 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _c("p", { staticClass: "m-0" }, [
-                    _vm._v(
-                      "\n                Aprēķinātā dienas likme no atlikuma:\n                " +
-                        _vm._s(_vm.calculatedDailyRate) +
-                        " EUR\n              "
-                    )
-                  ])
+                  _c(
+                    "p",
+                    {
+                      staticClass: "m-0",
+                      class: [
+                        this.dailyRate <= this.calculatedDailyRate
+                          ? "text-success"
+                          : "text-danger"
+                      ]
+                    },
+                    [
+                      _vm._v(
+                        "\n                Aprēķinātā dienas likme no atlikuma:\n                " +
+                          _vm._s(_vm.calculatedDailyRate) +
+                          " EUR\n              "
+                      )
+                    ]
+                  )
                 ])
               ])
             ]),
@@ -41765,7 +41803,8 @@ var render = function() {
                     attrs: {
                       type: "number",
                       name: "mainSalary",
-                      id: "mainSalary"
+                      id: "mainSalary",
+                      required: ""
                     },
                     domProps: { value: _vm.mainSalary },
                     on: {
@@ -41797,7 +41836,8 @@ var render = function() {
                     attrs: {
                       type: "number",
                       name: "dailyRate",
-                      id: "dailyRate"
+                      id: "dailyRate",
+                      required: ""
                     },
                     domProps: { value: _vm.dailyRate },
                     on: {
@@ -41829,7 +41869,8 @@ var render = function() {
                     attrs: {
                       type: "number",
                       name: "currentBalance",
-                      id: "currentBalance"
+                      id: "currentBalance",
+                      required: ""
                     },
                     domProps: { value: _vm.currentBalance },
                     on: {
