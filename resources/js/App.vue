@@ -1,10 +1,9 @@
 <template>
   <div class="container mt-3">
-    <div class="alert-msgs mt-3">
+    <div class="alert-msgs mt-3" v-if="updateSuccess || updateFail">
       <div
         class="alert alert-dismissible"
         v-bind:class="updateSuccess ? 'alert-success' : 'alert-danger'"
-        v-if="updateSuccess || updateFail"
         role="alert"
       >
         {{ this.updateMsg }}
@@ -35,7 +34,7 @@ export default {
   },
   data() {
     return {
-      updateSuccess: "",
+      updateSuccess: false,
       updateFail: false,
       updateMsg: "",
     };

@@ -7,40 +7,23 @@
             <ul class="list-group">
               <li class="list-group-item">
                 <h5 class="text-center m-0 font-weight-bold">
-                  Kopā ienākumi: {{ totalIncome }} EUR
+                  {{ totalIncome }}
                 </h5>
-                <p class="text-center m-0">Alga: {{ mainSalary }} EUR</p>
               </li>
               <li class="list-group-item">
                 <h5 class="text-center m-0 font-weight-bold">
                   Konta atlikums: {{ currentBalance }} EUR
                 </h5>
-                <p
-                  class="m-0"
-                  v-bind:class="[
-                    this.currentBalance >= this.balanceShouldNotBeBelow
-                      ? 'text-success'
-                      : 'text-danger',
-                  ]"
-                >
-                  Kontā nevajadzētu būt mazāk par:
-                  {{ balanceShouldNotBeBelow }} EUR
+                <p class="m-0 text-center">
+                  {{ recomendedBalance }}
                 </p>
               </li>
               <li class="list-group-item">
                 <h5 class="text-center m-0 font-weight-bold">
                   Dienas likme: {{ dailyRate }} EUR
                 </h5>
-                <p
-                  class="m-0"
-                  v-bind:class="[
-                    this.dailyRate <= this.calculatedDailyRate
-                      ? 'text-success'
-                      : 'text-danger',
-                  ]"
-                >
-                  Aprēķinātā dienas likme no atlikuma:
-                  {{ calculatedDailyRate }} EUR
+                <p class="m-0 text-center">
+                  {{ recomendeDailyRate }}
                 </p>
               </li>
             </ul>
@@ -109,7 +92,7 @@
               type="button"
               data-dismiss="modal"
               class="btn btn-success"
-              @click.prevent="changeSalary"
+              v-on:click.prevent="changeSalary"
             >
               Saglabāt
             </button>
@@ -125,23 +108,30 @@ export default {
   data() {
     return {
       mainSalary: 0,
-      totalIncome: 0,
       updateSalary: false,
-      calculatedDailyRate: 0,
       dailyRate: 0,
       currentBalance: 0,
-      balanceShouldNotBeBelow: 0,
+      tempDays: 13,
     };
   },
-  watch: {
-    mainSalary(mainSalary) {
-      this.totalIncome = mainSalary;
+  watch: {},
+  computed: {
+    totalIncome() {
+      return "Kopā ienākumi: " + this.mainSalary + " EUR";
     },
-    currentBalance() {
-      this.calculateDailyRate();
+    recomendeDailyRate: function () {
+      return (
+        "Aprēķinātā dienas likme no atlikuma " +
+        parseFloat(this.currentBalance / this.tempDays).toFixed(2) +
+        " EUR"
+      );
     },
-    dailyRate() {
-      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 13).toFixed(2);
+    recomendedBalance() {
+      return (
+        "Kontā nevajadzētu būt mazāk par: " +
+        parseFloat(this.dailyRate * this.tempDays).toFixed(2) +
+        " EUR"
+      );
     },
   },
   methods: {
@@ -167,11 +157,6 @@ export default {
         updateMsg: msg,
       };
       return this.$emit("updateStatus", updateStatus);
-    },
-    calculateDailyRate: function () {
-      this.calculatedDailyRate = parseFloat(this.currentBalance / 13).toFixed(
-        2
-      );
     },
   },
   mounted() {

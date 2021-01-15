@@ -9,8 +9,8 @@
             <h5 class="text-center" v-if="salaryDate">
               Algas diena: {{ salaryDate }}
             </h5>
-            <h5 class="text-center font-weight-bold" v-if="daysUntilSalary">
-              Līdz algai: {{ daysUntilSalary }}
+            <h5 class="text-center font-weight-bold" v-if="salaryDate">
+              {{ calculateDaysUntilSalary }}
             </h5>
             <hr />
             <label class="text-center" for="salarydata"
@@ -40,21 +40,12 @@ export default {
   data() {
     return {
       currentDate: "",
-      daysUntilSalary: 0,
       salaryDate: "",
     };
   },
-  watch: {
-    salaryDate(salaryDate, currentDate) {
-      this.calculateDaysUntilSalary(salaryDate, currentDate);
-    },
-  },
-  methods: {
-    dateFunction: function () {
-      let currentDate = moment().format("YYYY-MM-DD");
-      this.currentDate = currentDate;
-    },
-    calculateDaysUntilSalary: function (salaryDate, currentDate) {
+  watch: {},
+  computed: {
+    calculateDaysUntilSalary(salaryDate, currentDate) {
       let from = this.salaryDate;
       let to = this.currentDate;
       let diff = Math.abs(
@@ -62,8 +53,20 @@ export default {
           .startOf("day")
           .diff(moment(to, "YYYY-MM-DD").startOf("day"), "days")
       );
-      return (this.daysUntilSalary = diff);
+      if (diff === 0) {
+        return "Šodien jābūt algas dienai!";
+      } else if (diff < 0) {
+        return "Algai vajadzēja jau būt! :(";
+      }
+      return "Līdz algai: " + diff;
     },
+  },
+  methods: {
+    dateFunction: function () {
+      let currentDate = moment().format("YYYY-MM-DD");
+      this.currentDate = currentDate;
+    },
+
     reportUpdateStatus: function (status, msg) {
       const updateStatus = {
         updateSuccess: status,

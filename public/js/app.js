@@ -1935,7 +1935,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -1946,7 +1945,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      updateSuccess: "",
+      updateSuccess: false,
       updateFail: false,
       updateMsg: ""
     };
@@ -2018,25 +2017,29 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       currentDate: "",
-      daysUntilSalary: 0,
       salaryDate: ""
     };
   },
-  watch: {
-    salaryDate: function salaryDate(_salaryDate, currentDate) {
-      this.calculateDaysUntilSalary(_salaryDate, currentDate);
+  watch: {},
+  computed: {
+    calculateDaysUntilSalary: function calculateDaysUntilSalary(salaryDate, currentDate) {
+      var from = this.salaryDate;
+      var to = this.currentDate;
+      var diff = Math.abs(moment__WEBPACK_IMPORTED_MODULE_0___default()(from, "YYYY-MM-DD").startOf("day").diff(moment__WEBPACK_IMPORTED_MODULE_0___default()(to, "YYYY-MM-DD").startOf("day"), "days"));
+
+      if (diff === 0) {
+        return "Šodien jābūt algas dienai!";
+      } else if (diff < 0) {
+        return "Algai vajadzēja jau būt! :(";
+      }
+
+      return "Līdz algai: " + diff;
     }
   },
   methods: {
     dateFunction: function dateFunction() {
       var currentDate = moment__WEBPACK_IMPORTED_MODULE_0___default()().format("YYYY-MM-DD");
       this.currentDate = currentDate;
-    },
-    calculateDaysUntilSalary: function calculateDaysUntilSalary(salaryDate, currentDate) {
-      var from = this.salaryDate;
-      var to = this.currentDate;
-      var diff = Math.abs(moment__WEBPACK_IMPORTED_MODULE_0___default()(from, "YYYY-MM-DD").startOf("day").diff(moment__WEBPACK_IMPORTED_MODULE_0___default()(to, "YYYY-MM-DD").startOf("day"), "days"));
-      return this.daysUntilSalary = diff;
     },
     reportUpdateStatus: function reportUpdateStatus(status, msg) {
       var updateStatus = {
@@ -2186,45 +2189,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Salary",
   data: function data() {
     return {
       mainSalary: 0,
-      totalIncome: 0,
       updateSalary: false,
-      calculatedDailyRate: 0,
       dailyRate: 0,
       currentBalance: 0,
-      balanceShouldNotBeBelow: 0
+      tempDays: 13
     };
   },
-  watch: {
-    mainSalary: function mainSalary(_mainSalary) {
-      this.totalIncome = _mainSalary;
+  watch: {},
+  computed: {
+    totalIncome: function totalIncome() {
+      return "Kopā ienākumi: " + this.mainSalary + " EUR";
     },
-    currentBalance: function currentBalance() {
-      this.calculateDailyRate();
+    recomendeDailyRate: function recomendeDailyRate() {
+      return "Aprēķinātā dienas likme no atlikuma " + parseFloat(this.currentBalance / this.tempDays).toFixed(2) + " EUR";
     },
-    dailyRate: function dailyRate() {
-      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 13).toFixed(2);
+    recomendedBalance: function recomendedBalance() {
+      return "Kontā nevajadzētu būt mazāk par: " + parseFloat(this.dailyRate * this.tempDays).toFixed(2) + " EUR";
     }
   },
   methods: {
@@ -2250,9 +2235,6 @@ __webpack_require__.r(__webpack_exports__);
         updateMsg: msg
       };
       return this.$emit("updateStatus", updateStatus);
-    },
-    calculateDailyRate: function calculateDailyRate() {
-      this.calculatedDailyRate = parseFloat(this.currentBalance / 13).toFixed(2);
     }
   },
   mounted: function mounted() {
@@ -41495,9 +41477,9 @@ var render = function() {
     "div",
     { staticClass: "container mt-3" },
     [
-      _c("div", { staticClass: "alert-msgs mt-3" }, [
-        _vm.updateSuccess || _vm.updateFail
-          ? _c(
+      _vm.updateSuccess || _vm.updateFail
+        ? _c("div", { staticClass: "alert-msgs mt-3" }, [
+            _c(
               "div",
               {
                 staticClass: "alert alert-dismissible",
@@ -41509,8 +41491,8 @@ var render = function() {
                 _vm._m(0)
               ]
             )
-          : _vm._e()
-      ]),
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _c("Date", { on: { updateStatus: _vm.updateStatus } }),
       _vm._v(" "),
@@ -41592,11 +41574,11 @@ var render = function() {
                   ])
                 : _vm._e(),
               _vm._v(" "),
-              _vm.daysUntilSalary
+              _vm.salaryDate
                 ? _c("h5", { staticClass: "text-center font-weight-bold" }, [
                     _vm._v(
-                      "\n            Līdz algai: " +
-                        _vm._s(_vm.daysUntilSalary) +
+                      "\n            " +
+                        _vm._s(_vm.calculateDaysUntilSalary) +
                         "\n          "
                     )
                   ])
@@ -41688,16 +41670,12 @@ var render = function() {
                     { staticClass: "text-center m-0 font-weight-bold" },
                     [
                       _vm._v(
-                        "\n                Kopā ienākumi: " +
+                        "\n                " +
                           _vm._s(_vm.totalIncome) +
-                          " EUR\n              "
+                          "\n              "
                       )
                     ]
-                  ),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "text-center m-0" }, [
-                    _vm._v("Alga: " + _vm._s(_vm.mainSalary) + " EUR")
-                  ])
+                  )
                 ]),
                 _vm._v(" "),
                 _c("li", { staticClass: "list-group-item" }, [
@@ -41713,24 +41691,13 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _c(
-                    "p",
-                    {
-                      staticClass: "m-0",
-                      class: [
-                        this.currentBalance >= this.balanceShouldNotBeBelow
-                          ? "text-success"
-                          : "text-danger"
-                      ]
-                    },
-                    [
-                      _vm._v(
-                        "\n                Kontā nevajadzētu būt mazāk par:\n                " +
-                          _vm._s(_vm.balanceShouldNotBeBelow) +
-                          " EUR\n              "
-                      )
-                    ]
-                  )
+                  _c("p", { staticClass: "m-0 text-center" }, [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(_vm.recomendedBalance) +
+                        "\n              "
+                    )
+                  ])
                 ]),
                 _vm._v(" "),
                 _c("li", { staticClass: "list-group-item" }, [
@@ -41746,24 +41713,13 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _c(
-                    "p",
-                    {
-                      staticClass: "m-0",
-                      class: [
-                        this.dailyRate <= this.calculatedDailyRate
-                          ? "text-success"
-                          : "text-danger"
-                      ]
-                    },
-                    [
-                      _vm._v(
-                        "\n                Aprēķinātā dienas likme no atlikuma:\n                " +
-                          _vm._s(_vm.calculatedDailyRate) +
-                          " EUR\n              "
-                      )
-                    ]
-                  )
+                  _c("p", { staticClass: "m-0 text-center" }, [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(_vm.recomendeDailyRate) +
+                        "\n              "
+                    )
+                  ])
                 ])
               ])
             ]),
