@@ -34,7 +34,7 @@
               data-toggle="modal"
               data-target="#updateSalary"
             >
-              Atjaunot datus
+              Atjaunot
             </button>
           </div>
         </div>
