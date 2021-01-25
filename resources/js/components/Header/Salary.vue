@@ -104,14 +104,19 @@
 </template>
 <script>
 export default {
-  name: "Salary",
+  emit: ["update-status"],
+  props: {
+    daysUntilSalary: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       mainSalary: 0,
       updateSalary: false,
       dailyRate: 0,
       currentBalance: 0,
-      tempDays: 13,
     };
   },
   watch: {},
@@ -122,14 +127,14 @@ export default {
     recomendeDailyRate: function () {
       return (
         "Aprēķinātā dienas likme no atlikuma " +
-        parseFloat(this.currentBalance / this.tempDays).toFixed(2) +
+        parseFloat(this.currentBalance / this.daysUntilSalary).toFixed(2) +
         " EUR"
       );
     },
     recomendedBalance() {
       return (
         "Kontā nevajadzētu būt mazāk par: " +
-        parseFloat(this.dailyRate * this.tempDays).toFixed(2) +
+        parseFloat(this.dailyRate * this.daysUntilSalary).toFixed(2) +
         " EUR"
       );
     },
@@ -145,18 +150,11 @@ export default {
         })
         .then((response) => {
           this.updateSalary = false;
-          this.reportUpdateStatus(true, response.data);
+          this.$emit("update-status", true, response.data);
         })
         .catch((err) => {
-          this.reportUpdateStatus(false, err);
+          this.$emit("update-status", false, err);
         });
-    },
-    reportUpdateStatus: function (status, msg) {
-      const updateStatus = {
-        updateSuccess: status,
-        updateMsg: msg,
-      };
-      return this.$emit("updateStatus", updateStatus);
     },
   },
   mounted() {
@@ -170,7 +168,7 @@ export default {
         }
       })
       .catch((err) => {
-        this.reportUpdateStatus(false, err);
+        this.$emit("update-status", false, err);
       });
   },
 };

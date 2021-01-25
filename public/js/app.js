@@ -1935,10 +1935,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "app",
   components: {
     Date: _components_Header_Date__WEBPACK_IMPORTED_MODULE_0__["default"],
     Salary: _components_Header_Salary__WEBPACK_IMPORTED_MODULE_1__["default"]
@@ -1947,18 +1949,22 @@ __webpack_require__.r(__webpack_exports__);
     return {
       updateSuccess: false,
       updateFail: false,
-      updateMsg: ""
+      updateMsg: "",
+      calculatedDaysUntilSalary: 0
     };
   },
   methods: {
-    updateStatus: function updateStatus(_updateStatus) {
-      if (_updateStatus.updateSuccess) {
+    updateStatus: function updateStatus(_updateStatus, updateMsg) {
+      if (_updateStatus) {
         this.updateSuccess = true;
-        this.updateMsg = _updateStatus.updateMsg;
+        this.updateMsg = updateMsg;
       } else {
         this.updateFail = true;
-        this.updateMsg = _updateStatus.updateMsg;
+        this.updateMsg = updateMsg;
       }
+    },
+    daysUntilSalary: function daysUntilSalary(days) {
+      this.calculatedDaysUntilSalary = days;
     }
   }
 });
@@ -2013,7 +2019,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "Date",
+  emit: ["update-status", "days-until-salary"],
   data: function data() {
     return {
       currentDate: "",
@@ -2033,6 +2039,7 @@ __webpack_require__.r(__webpack_exports__);
         return "Algai vajadzēja jau būt! :(";
       }
 
+      this.$emit("days-until-salary", diff);
       return "Līdz algai: " + diff;
     }
   },
@@ -2041,22 +2048,15 @@ __webpack_require__.r(__webpack_exports__);
       var currentDate = moment__WEBPACK_IMPORTED_MODULE_0___default()().format("YYYY-MM-DD");
       this.currentDate = currentDate;
     },
-    reportUpdateStatus: function reportUpdateStatus(status, msg) {
-      var updateStatus = {
-        updateSuccess: status,
-        updateMsg: msg
-      };
-      return this.$emit("updateStatus", updateStatus);
-    },
     updateSalaryDate: function updateSalaryDate() {
       var _this = this;
 
       axios.post("/api/date", {
         salaryDate: this.salaryDate
       }).then(function (response) {
-        _this.reportUpdateStatus(true, response.data);
+        _this.$emit("update-status", true, response.data);
       })["catch"](function (err) {
-        _this.reportUpdateStatus(false, err);
+        _this.$emit("update-status", false, err);
       });
     }
   },
@@ -2069,7 +2069,7 @@ __webpack_require__.r(__webpack_exports__);
         _this2.salaryDate = response.data.salaryDate;
       }
     })["catch"](function (err) {
-      _this2.reportUpdateStatus(false, err);
+      _this2.$emit("update-status", false, err);
     });
   }
 });
@@ -2190,14 +2190,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "Salary",
+  emit: ["update-status"],
+  props: {
+    daysUntilSalary: {
+      type: Number,
+      required: true
+    }
+  },
   data: function data() {
     return {
       mainSalary: 0,
       updateSalary: false,
       dailyRate: 0,
-      currentBalance: 0,
-      tempDays: 13
+      currentBalance: 0
     };
   },
   watch: {},
@@ -2206,10 +2211,10 @@ __webpack_require__.r(__webpack_exports__);
       return "Kopā ienākumi: " + this.mainSalary + " EUR";
     },
     recomendeDailyRate: function recomendeDailyRate() {
-      return "Aprēķinātā dienas likme no atlikuma " + parseFloat(this.currentBalance / this.tempDays).toFixed(2) + " EUR";
+      return "Aprēķinātā dienas likme no atlikuma " + parseFloat(this.currentBalance / this.daysUntilSalary).toFixed(2) + " EUR";
     },
     recomendedBalance: function recomendedBalance() {
-      return "Kontā nevajadzētu būt mazāk par: " + parseFloat(this.dailyRate * this.tempDays).toFixed(2) + " EUR";
+      return "Kontā nevajadzētu būt mazāk par: " + parseFloat(this.dailyRate * this.daysUntilSalary).toFixed(2) + " EUR";
     }
   },
   methods: {
@@ -2224,17 +2229,10 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         _this.updateSalary = false;
 
-        _this.reportUpdateStatus(true, response.data);
+        _this.$emit("update-status", true, response.data);
       })["catch"](function (err) {
-        _this.reportUpdateStatus(false, err);
+        _this.$emit("update-status", false, err);
       });
-    },
-    reportUpdateStatus: function reportUpdateStatus(status, msg) {
-      var updateStatus = {
-        updateSuccess: status,
-        updateMsg: msg
-      };
-      return this.$emit("updateStatus", updateStatus);
     }
   },
   mounted: function mounted() {
@@ -2247,7 +2245,7 @@ __webpack_require__.r(__webpack_exports__);
         _this2.currentBalance = response.data.currentBalance;
       }
     })["catch"](function (err) {
-      _this2.reportUpdateStatus(false, err);
+      _this2.$emit("update-status", false, err);
     });
   }
 });
@@ -41494,11 +41492,19 @@ var render = function() {
           ])
         : _vm._e(),
       _vm._v(" "),
-      _c("Date", { on: { updateStatus: _vm.updateStatus } }),
+      _c("Date", {
+        on: {
+          "update-status": _vm.updateStatus,
+          "days-until-salary": _vm.daysUntilSalary
+        }
+      }),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
-      _c("Salary", { on: { updateStatus: _vm.updateStatus } })
+      _c("Salary", {
+        attrs: { "days-until-salary": _vm.calculatedDaysUntilSalary },
+        on: { "update-status": _vm.updateStatus }
+      })
     ],
     1
   )

@@ -17,9 +17,12 @@
         </button>
       </div>
     </div>
-    <Date v-on:updateStatus="updateStatus" />
+    <Date @update-status="updateStatus" @days-until-salary="daysUntilSalary" />
     <hr />
-    <Salary v-on:updateStatus="updateStatus" />
+    <Salary
+      :days-until-salary="calculatedDaysUntilSalary"
+      @update-status="updateStatus"
+    />
   </div>
 </template>
 
@@ -27,7 +30,6 @@
 import Date from "./components/Header/Date";
 import Salary from "./components/Header/Salary";
 export default {
-  name: "app",
   components: {
     Date,
     Salary,
@@ -37,17 +39,21 @@ export default {
       updateSuccess: false,
       updateFail: false,
       updateMsg: "",
+      calculatedDaysUntilSalary: 0,
     };
   },
   methods: {
-    updateStatus: function (updateStatus) {
-      if (updateStatus.updateSuccess) {
+    updateStatus: function (updateStatus, updateMsg) {
+      if (updateStatus) {
         this.updateSuccess = true;
-        this.updateMsg = updateStatus.updateMsg;
+        this.updateMsg = updateMsg;
       } else {
         this.updateFail = true;
-        this.updateMsg = updateStatus.updateMsg;
+        this.updateMsg = updateMsg;
       }
+    },
+    daysUntilSalary(days) {
+      this.calculatedDaysUntilSalary = days;
     },
   },
 };

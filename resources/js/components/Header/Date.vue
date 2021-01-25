@@ -36,7 +36,7 @@
 <script>
 import moment from "moment";
 export default {
-  name: "Date",
+  emit: ["update-status", "days-until-salary"],
   data() {
     return {
       currentDate: "",
@@ -58,6 +58,7 @@ export default {
       } else if (diff < 0) {
         return "Algai vajadzēja jau būt! :(";
       }
+      this.$emit("days-until-salary", diff);
       return "Līdz algai: " + diff;
     },
   },
@@ -66,24 +67,16 @@ export default {
       let currentDate = moment().format("YYYY-MM-DD");
       this.currentDate = currentDate;
     },
-
-    reportUpdateStatus: function (status, msg) {
-      const updateStatus = {
-        updateSuccess: status,
-        updateMsg: msg,
-      };
-      return this.$emit("updateStatus", updateStatus);
-    },
     updateSalaryDate: function () {
       axios
         .post("/api/date", {
           salaryDate: this.salaryDate,
         })
         .then((response) => {
-          this.reportUpdateStatus(true, response.data);
+          this.$emit("update-status", true, response.data);
         })
         .catch((err) => {
-          this.reportUpdateStatus(false, err);
+          this.$emit("update-status", false, err);
         });
     },
   },
@@ -97,7 +90,7 @@ export default {
         }
       })
       .catch((err) => {
-        this.reportUpdateStatus(false, err);
+        this.$emit("update-status", false, err);
       });
   },
 };
