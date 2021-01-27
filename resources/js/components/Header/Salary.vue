@@ -1,44 +1,38 @@
 <template>
   <div>
-    <div class="row justify-content-center align-items-center flex-column">
-      <div class="container">
-        <div class="col-md-6">
-          <div class="mb-3">
-            <ul class="list-group">
-              <li class="list-group-item">
-                <h5 class="text-center m-0 font-weight-bold">
-                  {{ totalIncome }}
-                </h5>
-              </li>
-              <li class="list-group-item">
-                <h5 class="text-center m-0 font-weight-bold">
-                  Konta atlikums: {{ currentBalance }} EUR
-                </h5>
-                <p class="m-0 text-center">
-                  {{ recomendedBalance }}
-                </p>
-              </li>
-              <li class="list-group-item">
-                <h5 class="text-center m-0 font-weight-bold">
-                  Dienas likme: {{ dailyRate }} EUR
-                </h5>
-                <p class="m-0 text-center">
-                  {{ recomendeDailyRate }}
-                </p>
-              </li>
-            </ul>
-          </div>
-          <div class="text-center">
-            <button
-              class="btn btn-success"
-              data-toggle="modal"
-              data-target="#updateSalary"
-            >
-              Atjaunot
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="mb-3">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            {{ totalIncome }}
+          </h5>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            Konta atlikums: {{ currentBalance }} EUR
+          </h5>
+          <p class="m-0 text-center">
+            {{ recomendedBalance }}
+          </p>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            Dienas likme: {{ dailyRate }} EUR
+          </h5>
+          <p class="m-0 text-center">
+            {{ recomendeDailyRate }}
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <button
+        class="btn btn-success"
+        data-toggle="modal"
+        data-target="#updateSalary"
+      >
+        Atjaunot
+      </button>
     </div>
     <div class="modal fade" id="updateSalary" tabindex="-1">
       <div class="modal-dialog">
@@ -156,20 +150,23 @@ export default {
           this.$emit("update-status", false, err);
         });
     },
+    fetchData: function () {
+      axios
+        .get("/api/salary")
+        .then((response) => {
+          if (response.data != "") {
+            this.mainSalary = response.data.amount;
+            this.dailyRate = response.data.dailyRate;
+            this.currentBalance = response.data.currentBalance;
+          }
+        })
+        .catch((err) => {
+          this.$emit("update-status", false, err);
+        });
+    },
   },
-  mounted() {
-    axios
-      .get("/api/salary")
-      .then((response) => {
-        if (response.data != "") {
-          this.mainSalary = response.data.amount;
-          this.dailyRate = response.data.dailyRate;
-          this.currentBalance = response.data.currentBalance;
-        }
-      })
-      .catch((err) => {
-        this.$emit("update-status", false, err);
-      });
+  created() {
+    this.fetchData();
   },
 };
 </script>

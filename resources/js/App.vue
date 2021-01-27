@@ -1,28 +1,38 @@
 <template>
-  <div class="container mt-3">
-    <div class="alert-msgs mt-3" v-if="updateSuccess || updateFail">
-      <div
-        class="alert alert-dismissible"
-        v-bind:class="updateSuccess ? 'alert-success' : 'alert-danger'"
-        role="alert"
-      >
-        {{ this.updateMsg }}
-        <button
-          type="button"
-          class="close"
-          data-dismiss="alert"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
+  <div>
+    <div class="row">
+      <div class="container">
+        <div class="alert-msgs" v-if="updateSuccess || updateFail">
+          <div
+            class="alert alert-dismissible"
+            v-bind:class="updateSuccess ? 'alert-success' : 'alert-danger'"
+            role="alert"
+          >
+            {{ this.updateMsg }}
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <Date
+            @update-status="updateStatus"
+            @days-until-salary="daysUntilSalary"
+          />
+        </div>
+        <div class="col-md-6">
+          <Salary
+            :days-until-salary="calculatedDaysUntilSalary"
+            @update-status="updateStatus"
+          />
+        </div>
       </div>
     </div>
-    <Date @update-status="updateStatus" @days-until-salary="daysUntilSalary" />
-    <hr />
-    <Salary
-      :days-until-salary="calculatedDaysUntilSalary"
-      @update-status="updateStatus"
-    />
   </div>
 </template>
 

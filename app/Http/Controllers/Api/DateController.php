@@ -6,8 +6,7 @@ use App\Models\Date;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class DateController extends Controller
-{
+class DateController extends Controller{
     public function index()
     {
         $date = Date::latest('created_at')->first();

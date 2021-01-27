@@ -1,38 +1,41 @@
 <template>
   <div>
-    <div class="row justify-content-center">
-      <form v-on:submit.prevent="updateSalaryDate">
-        <div class="form-row">
-          <div class="form-group">
-            <h5 class="text-center">Šodienas datums: {{ currentDate }}</h5>
-            <hr v-if="salaryDate" />
-            <h5 class="text-center" v-if="salaryDate">
-              Algas diena: {{ salaryDate }}
-            </h5>
-            <h5 class="text-center font-weight-bold" v-if="salaryDate">
-              {{ calculateDaysUntilSalary }}
-            </h5>
-            <hr />
-            <label class="text-center" for="salarydata"
-              >Jauns algas datums:</label
-            >
-            <input
-              v-model="salaryDate"
-              type="date"
-              name="salarydate"
-              id="salarydate"
-              class="form-control"
-            />
-          </div>
-        </div>
-        <div class="text-center">
-          <button class="btn btn-success">Atjaunot</button>
-        </div>
-      </form>
-    </div>
+    <form v-on:submit.prevent="updateSalaryDate">
+      <ul class="list-group mb-3">
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            Šodienas datums: {{ currentDate }}
+          </h5>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold" v-if="salaryDate">
+            Algas diena: {{ salaryDate }}
+          </h5>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold" v-if="salaryDate">
+            {{ calculateDaysUntilSalary }}
+          </h5>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold pb-3">
+            Jauns algas datums:
+          </h5>
+          <input
+            v-model="salaryDate"
+            type="date"
+            name="salarydate"
+            id="salarydate"
+            class="form-control"
+          />
+        </li>
+      </ul>
+      <div class="mb-3">
+        <button class="btn btn-success">Atjaunot</button>
+      </div>
+    </form>
   </div>
 </template>
-
 <script>
 import moment from "moment";
 export default {
@@ -79,19 +82,24 @@ export default {
           this.$emit("update-status", false, err);
         });
     },
+    fetchData: function () {
+      axios
+        .get("/api/date")
+        .then((response) => {
+          if (response.data != "") {
+            this.salaryDate = response.data.salaryDate;
+          }
+        })
+        .catch((err) => {
+          this.$emit("update-status", false, err);
+        });
+    },
   },
-  mounted() {
+  created() {
     this.dateFunction();
-    axios
-      .get("/api/date")
-      .then((response) => {
-        if (response.data != "") {
-          this.salaryDate = response.data.salaryDate;
-        }
-      })
-      .catch((err) => {
-        this.$emit("update-status", false, err);
-      });
+    this.fetchData();
   },
 };
 </script>
+<style scoped>
+</style>
