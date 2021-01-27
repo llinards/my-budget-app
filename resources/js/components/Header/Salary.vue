@@ -1,61 +1,38 @@
 <template>
   <div>
-    <div class="row justify-content-center align-items-center flex-column">
-      <div class="container">
-        <div class="col-md-6">
-          <div class="mb-3">
-            <ul class="list-group">
-              <li class="list-group-item">
-                <h5 class="text-center m-0 font-weight-bold">
-                  Kopā ienākumi: {{ totalIncome }} EUR
-                </h5>
-                <p class="text-center m-0">Alga: {{ mainSalary }} EUR</p>
-              </li>
-              <li class="list-group-item">
-                <h5 class="text-center m-0 font-weight-bold">
-                  Konta atlikums: {{ currentBalance }} EUR
-                </h5>
-                <p
-                  class="m-0"
-                  v-bind:class="[
-                    this.currentBalance >= this.balanceShouldNotBeBelow
-                      ? 'text-success'
-                      : 'text-danger',
-                  ]"
-                >
-                  Kontā nevajadzētu būt mazāk par:
-                  {{ balanceShouldNotBeBelow }} EUR
-                </p>
-              </li>
-              <li class="list-group-item">
-                <h5 class="text-center m-0 font-weight-bold">
-                  Dienas likme: {{ dailyRate }} EUR
-                </h5>
-                <p
-                  class="m-0"
-                  v-bind:class="[
-                    this.dailyRate <= this.calculatedDailyRate
-                      ? 'text-success'
-                      : 'text-danger',
-                  ]"
-                >
-                  Aprēķinātā dienas likme no atlikuma:
-                  {{ calculatedDailyRate }} EUR
-                </p>
-              </li>
-            </ul>
-          </div>
-          <div class="text-center">
-            <button
-              class="btn btn-success"
-              data-toggle="modal"
-              data-target="#updateSalary"
-            >
-              Atjaunot datus
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="mb-3">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            {{ totalIncome }}
+          </h5>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            Konta atlikums: {{ currentBalance }} EUR
+          </h5>
+          <p class="m-0 text-center">
+            {{ recomendedBalance }}
+          </p>
+        </li>
+        <li class="list-group-item">
+          <h5 class="text-center m-0 font-weight-bold">
+            Dienas likme: {{ dailyRate }} EUR
+          </h5>
+          <p class="m-0 text-center">
+            {{ recomendeDailyRate }}
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <button
+        class="btn btn-success"
+        data-toggle="modal"
+        data-target="#updateSalary"
+      >
+        Atjaunot
+      </button>
     </div>
     <div class="modal fade" id="updateSalary" tabindex="-1">
       <div class="modal-dialog">
@@ -109,7 +86,7 @@
               type="button"
               data-dismiss="modal"
               class="btn btn-success"
-              @click.prevent="changeSalary"
+              v-on:click.prevent="changeSalary"
             >
               Saglabāt
             </button>
@@ -121,27 +98,39 @@
 </template>
 <script>
 export default {
-  name: "Salary",
+  emit: ["update-status"],
+  props: {
+    daysUntilSalary: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       mainSalary: 0,
-      totalIncome: 0,
       updateSalary: false,
-      calculatedDailyRate: 0,
       dailyRate: 0,
       currentBalance: 0,
-      balanceShouldNotBeBelow: 0,
     };
   },
-  watch: {
-    mainSalary(mainSalary) {
-      this.totalIncome = mainSalary;
+  watch: {},
+  computed: {
+    totalIncome() {
+      return "Kopā ienākumi: " + this.mainSalary + " EUR";
     },
-    currentBalance() {
-      this.calculateDailyRate();
+    recomendeDailyRate: function () {
+      return (
+        "Aprēķinātā dienas likme no atlikuma " +
+        parseFloat(this.currentBalance / this.daysUntilSalary).toFixed(2) +
+        " EUR"
+      );
     },
-    dailyRate() {
-      this.balanceShouldNotBeBelow = parseFloat(this.dailyRate * 13).toFixed(2);
+    recomendedBalance() {
+      return (
+        "Kontā nevajadzētu būt mazāk par: " +
+        parseFloat(this.dailyRate * this.daysUntilSalary).toFixed(2) +
+        " EUR"
+      );
     },
   },
   methods: {
@@ -155,38 +144,29 @@ export default {
         })
         .then((response) => {
           this.updateSalary = false;
-          this.reportUpdateStatus(true, response.data);
+          this.$emit("update-status", true, response.data);
         })
         .catch((err) => {
-          this.reportUpdateStatus(false, err);
+          this.$emit("update-status", false, err);
         });
     },
-    reportUpdateStatus: function (status, msg) {
-      const updateStatus = {
-        updateSuccess: status,
-        updateMsg: msg,
-      };
-      return this.$emit("updateStatus", updateStatus);
-    },
-    calculateDailyRate: function () {
-      this.calculatedDailyRate = parseFloat(this.currentBalance / 13).toFixed(
-        2
-      );
+    fetchData: function () {
+      axios
+        .get("/api/salary")
+        .then((response) => {
+          if (response.data != "") {
+            this.mainSalary = response.data.amount;
+            this.dailyRate = response.data.dailyRate;
+            this.currentBalance = response.data.currentBalance;
+          }
+        })
+        .catch((err) => {
+          this.$emit("update-status", false, err);
+        });
     },
   },
-  mounted() {
-    axios
-      .get("/api/salary")
-      .then((response) => {
-        if (response.data != "") {
-          this.mainSalary = response.data.amount;
-          this.dailyRate = response.data.dailyRate;
-          this.currentBalance = response.data.currentBalance;
-        }
-      })
-      .catch((err) => {
-        this.reportUpdateStatus(false, err);
-      });
+  created() {
+    this.fetchData();
   },
 };
 </script>
